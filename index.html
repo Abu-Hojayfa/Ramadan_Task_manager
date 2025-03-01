@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Checklist -
+        <script>document.write(new Date().getFullYear());</script>
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+
+        h2 {
+            text-align: center;
+            padding: 10px;
+            width: 85%;
+            font-size: 28px;
+            margin: 20px auto;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        table {
+            width: 85%;
+            margin: auto;
+            border-collapse: collapse;
+            background: #fff;
+            position: relative;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px 13px;
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            width: 50px;
+            height: 20px;
+            position: relative;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+        }
+
+        th:first-child,
+        td:first-child,
+        .same {
+            width: 40%;
+            min-width: 200px;
+            position: sticky;
+            left: 0;
+            text-align: center;
+            z-index: 3;
+            background: #4CAF50;
+            color: white;
+        }
+
+        td:first-child {
+            text-align: left;
+            background: #fff;
+            color: black;
+        }
+
+        td.checked::before {
+            content: '\2713';
+            color: green;
+            font-size: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .save-btn,
+        .add-btn,
+        .erase-btn {
+            display: block;
+            width: 88.5%;
+            padding: 10px;
+            margin: 10px auto;
+            font-size: large;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .add-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .erase-btn {
+            background-color: rgb(255, 81, 81);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+
+            td:first-child,
+            th:first-child {
+                width: 60%;
+            }
+
+            th,
+            td {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .save-btn,
+            .add-btn,
+            .erase-btn {
+                width: 100%;
+            }
+        }
+
+        /* Color all odd columns (Day 1-30) in light green */
+        tbody tr td:nth-child(odd):not(:first-child) {
+            background-color: #e6ffe6;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 id="title">Ramadan Daily Checklist Year - <span id="year"></span></h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th colspan="30">30 Days</th>
+                </tr>
+                <tr>
+                    <th class="same">আজকের আমল</th>
+                    <script>
+                        for (let day = 1; day <= 30; day++) {
+                            document.write(`<th>${day}</th>`);
+                        }
+                    </script>
+                </tr>
+            </thead>
+            <tbody id="checklist"></tbody>
+        </table>
+    </div>
+
+    <button class="add-btn" onclick="addTask()">+ Add Task</button>
+    <button class="save-btn" onclick="saveChecklist()">Save</button>
+    <button class="erase-btn" onclick="eraseAllData()">Erase All Data</button>
+
+    <script>
+
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        let tasks = JSON.parse(localStorage.getItem("ramadanTasks")) || [
+            "পাঁচ ওয়াক্ত সালাত জামাতে সাথে আদায় করেছি",
+            "প্রতি ওয়াক্তের সুন্নাত সালাত আদায় করেছি",
+            "প্রতি সালাত শেষে মাসনুন দোয়া করেছি",
+            "দৈনিক ৫ বারের আজানের জবাব দিয়েছি",
+            "সালাতের তাসবিহ আদায় করেছি",
+            "সালাতের দোয়া (আল্লাহুম্মা দুআ) সালাত আদায় করেছি",
+            "কিয়ামুল লাইল (তাহাজ্জুদ) সালাত আদায় করেছি",
+            "সকল-সন্ধ্যার মাসনুন দোয়া-জিকির করেছি",
+            "ফরজের তিলাওয়াত করেছি",
+            "নবীজি (সা.) এর উপর দরুদ পাঠ করেছি",
+            "সাহরী অনুস্বরণে দান সদাকাহ করেছি",
+            "দীর্ঘ ও নিয়মিত কুরআন তিলাওয়াত করেছি",
+            "অপ্রয়োজন কথা বলা থেকে বিরত থেকেছি",
+            "পরনিন্দা থেকে দূরে থেকেছি",
+            "দুশ্চিন্তা নিয়ন্ত্রণ করার চেষ্টা করেছি",
+            "রোজা অবস্থায় ধৈর্য ও ইস্তিগফার করেছি",
+            "দু'আ কবুলের সময়গুলোতে দু'আ করেছি",
+            "পরিবারের সাথে ইফতার-বেজোড় খেজুর খেয়েছি",
+            "নবীজি (সা.) এর সুন্নাত অনুযায়ী ইফতার করেছি",
+            "ইফতারের আগে মাগফিরাতের দু'আ করেছি",
+            "অন্যকে ইফতার করানোর সুযোগ নিয়েছি",
+            "অন্যের ভুলকে ক্ষমা করেছি",
+            "গীবত, পরনিন্দা থেকে নিজে বিরত থেকেছি"
+        ];
+
+        function loadChecklist() {
+            const checklistBody = document.getElementById("checklist");
+            checklistBody.innerHTML = "";
+            let savedData = JSON.parse(localStorage.getItem("ramadanChecklist")) || {};
+
+            tasks.forEach((task, taskIndex) => {
+                let row = document.createElement("tr");
+                row.innerHTML = `<td>${task}</td>`;
+
+                for (let day = 1; day <= 30; day++) {
+                    let isChecked = savedData[`${taskIndex}-${day}`] ? 'checked' : '';
+                    row.innerHTML += `<td class='${isChecked ? "checked" : ""}' onclick='toggleCheck(${taskIndex}, ${day}, this)'></td>`;
+                }
+                checklistBody.appendChild(row);
+            });
+        }
+
+        function toggleCheck(taskIndex, day, cell) {
+            let savedData = JSON.parse(localStorage.getItem("ramadanChecklist")) || {};
+            let key = `${taskIndex}-${day}`;
+            if (savedData[key]) {
+                delete savedData[key];
+                cell.classList.remove("checked");
+            } else {
+                savedData[key] = true;
+                cell.classList.add("checked");
+            }
+            localStorage.setItem("ramadanChecklist", JSON.stringify(savedData));
+        }
+
+        function addTask() {
+            let newTask = prompt("Enter the new task:");
+            if (newTask) {
+                tasks.push(newTask);
+                localStorage.setItem("ramadanTasks", JSON.stringify(tasks));
+                loadChecklist();
+            }
+        }
+
+        function eraseAllData() {
+            if (confirm("Are you sure you want to erase all saved data? This action cannot be undone!")) {
+                localStorage.removeItem("ramadanChecklist");
+                localStorage.removeItem("ramadanTasks");
+                tasks = [];  // Reset the tasks array
+                alert("All data erased successfully.");
+                location.reload(); // Refresh the page
+            }
+        }
+
+        loadChecklist();
+    </script>
+</body>
+
+</html>
