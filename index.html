@@ -7,6 +7,15 @@
     <title>Ramadan Checklist -
         <script>document.write(new Date().getFullYear());</script>
     </title>
+
+    <!-- Open Graph meta tags for link preview -->
+    <meta property="og:title" content="Ramadan Checklist - Daily Ibadah Tracker">
+    <meta property="og:description"
+        content="Track your daily Ramadan prayers, Quran recitation, and good deeds easily with this interactive checklist!">
+    <meta property="og:image" content="/3588691.jpg"> <!-- Replace with your image URL -->
+    <meta property="og:url" content="https://abu-hojayfa.github.io/Ramadan_Task_manager/"> <!-- Replace with your actual site URL -->
+    <meta property="og:type" content="website">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,23 +66,23 @@
             z-index: 3;
         }
 
+        /* Sticky first column */
         th:first-child,
-        td:first-child,
-        .same {
+        td:first-child {
             width: 40%;
             min-width: 200px;
             position: sticky;
             left: 0;
-            text-align: center;
+            background: white;
+            text-align: left;
             z-index: 3;
-            background: #4CAF50;
-            color: white;
         }
 
-        td:first-child {
-            text-align: left;
-            background: #fff;
-            color: black;
+        th:first-child {
+            background: #4CAF50;
+            color: white;
+            z-index: 50;
+            text-align: center;
         }
 
         td.checked::before {
@@ -210,7 +219,6 @@
             "ইফতারের আগে মাগফিরাতের দু'আ করেছি"
         ];
 
-
         function loadChecklist() {
             const checklistBody = document.getElementById("checklist");
             checklistBody.innerHTML = "";
@@ -254,9 +262,9 @@
             if (confirm("Are you sure you want to erase all saved data? This action cannot be undone!")) {
                 localStorage.removeItem("ramadanChecklist");
                 localStorage.removeItem("ramadanTasks");
-                tasks = [];  // Reset the tasks array
+                tasks = [];
                 alert("All data erased successfully.");
-                location.reload(); // Refresh the page
+                location.reload();
             }
         }
 
