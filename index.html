@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan Checklist -
-        <script>document.write(new Date().getFullYear());</script>
-    </title>
+    <title id="pageTitle">Ramadan Checklist</title>
 
     <meta property="og:title" content="Ramadan Checklist - Daily Ibadah Tracker">
     <meta property="og:description"
@@ -178,6 +176,7 @@
     <button class="erase-btn" onclick="eraseAllData()">Erase All Data</button>
 
     <script>
+        document.getElementById("pageTitle").textContent = "Ramadan Checklist - " + new Date().getFullYear();
         document.getElementById("year").textContent = new Date().getFullYear();
 
         let defaultTasks = [
