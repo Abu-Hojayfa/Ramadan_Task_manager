@@ -8,12 +8,11 @@
         <script>document.write(new Date().getFullYear());</script>
     </title>
 
-    <!-- Open Graph meta tags for link preview -->
     <meta property="og:title" content="Ramadan Checklist - Daily Ibadah Tracker">
     <meta property="og:description"
         content="Track your daily Ramadan prayers, Quran recitation, and good deeds easily with this interactive checklist!">
-    <meta property="og:image" content="/3588691.jpg"> <!-- Replace with your image URL -->
-    <meta property="og:url" content="https://abu-hojayfa.github.io/Ramadan_Task_manager/"> <!-- Replace with your actual site URL -->
+    <meta property="og:image" content="/3588691.jpg">
+    <meta property="og:url" content="https://abu-hojayfa.github.io/Ramadan_Task_manager/">
     <meta property="og:type" content="website">
 
     <style>
@@ -66,7 +65,6 @@
             z-index: 3;
         }
 
-        /* Sticky first column */
         th:first-child,
         td:first-child {
             width: 40%;
@@ -147,7 +145,6 @@
             }
         }
 
-        /* Color all odd columns (Day 1-30) in light green */
         tbody tr td:nth-child(odd):not(:first-child) {
             background-color: #e6ffe6;
         }
@@ -165,7 +162,7 @@
                     <th colspan="30">30 Days</th>
                 </tr>
                 <tr>
-                    <th class="same">আজকের আমল</th>
+                    <th>আজকের আমল</th>
                     <script>
                         for (let day = 1; day <= 30; day++) {
                             document.write(`<th>${day}</th>`);
@@ -181,10 +178,10 @@
     <button class="erase-btn" onclick="eraseAllData()">Erase All Data</button>
 
     <script>
-
         document.getElementById("year").textContent = new Date().getFullYear();
 
-        let tasks = [
+        let defaultTasks = [
+
             // 🕌 সালাত (Prayer) Related Tasks
             "পাঁচ ওয়াক্ত সালাত জামাতে সাথে আদায় করেছি",
             "প্রতি ওয়াক্তের সুন্নাত সালাত আদায় করেছি",
@@ -217,19 +214,23 @@
             "পরিবারের সাথে ইফতার-বেজোড় খেজুর খেয়েছি",
             "নবীজি (সা.) এর সুন্নাত অনুযায়ী ইফতার করেছি",
             "ইফতারের আগে মাগফিরাতের দু'আ করেছি"
+
         ];
 
         function loadChecklist() {
             const checklistBody = document.getElementById("checklist");
             checklistBody.innerHTML = "";
+
+            let savedTasks = JSON.parse(localStorage.getItem("ramadanTasks")) || defaultTasks;
             let savedData = JSON.parse(localStorage.getItem("ramadanChecklist")) || {};
 
-            tasks.forEach((task, taskIndex) => {
+            savedTasks.forEach((task, taskIndex) => {
                 let row = document.createElement("tr");
                 row.innerHTML = `<td>${task}</td>`;
 
                 for (let day = 1; day <= 30; day++) {
-                    let isChecked = savedData[`${taskIndex}-${day}`] ? 'checked' : '';
+                    let key = `${taskIndex}-${day}`;
+                    let isChecked = savedData[key] ? 'checked' : '';
                     row.innerHTML += `<td class='${isChecked ? "checked" : ""}' onclick='toggleCheck(${taskIndex}, ${day}, this)'></td>`;
                 }
                 checklistBody.appendChild(row);
@@ -252,8 +253,19 @@
         function addTask() {
             let newTask = prompt("Enter the new task:");
             if (newTask) {
-                tasks.push(newTask);
-                localStorage.setItem("ramadanTasks", JSON.stringify(tasks));
+                let savedTasks = JSON.parse(localStorage.getItem("ramadanTasks")) || defaultTasks;
+                savedTasks.push(newTask);
+                localStorage.setItem("ramadanTasks", JSON.stringify(savedTasks));
+
+                let savedData = JSON.parse(localStorage.getItem("ramadanChecklist")) || {};
+                let taskIndex = savedTasks.length - 1;
+
+                for (let day = 1; day <= 30; day++) {
+                    let key = `${taskIndex}-${day}`;
+                    savedData[key] = false;
+                }
+
+                localStorage.setItem("ramadanChecklist", JSON.stringify(savedData));
                 loadChecklist();
             }
         }
@@ -262,7 +274,6 @@
             if (confirm("Are you sure you want to erase all saved data? This action cannot be undone!")) {
                 localStorage.removeItem("ramadanChecklist");
                 localStorage.removeItem("ramadanTasks");
-                tasks = [];
                 alert("All data erased successfully.");
                 location.reload();
             }
